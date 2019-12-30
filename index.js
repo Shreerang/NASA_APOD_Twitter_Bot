@@ -22,7 +22,7 @@ axios.get('https://api.nasa.gov/planetary/apod?date=' + current_date + '&api_key
   .then(function (response) {
     nasa_img = response.data.hdurl ? response.data.hdurl : response.data.url
     nasa_img_title = response.data.title ? response.data.title : 'NASA Astronomy Photo of the Day'
-    nasa_img_title = nasa_img_title + ' 👨‍🚀👩‍🚀' + ' #NASA #astronomy #apod #pictureoftheday #nasa #space'
+    nasa_img_title = nasa_img_title + ' 👨‍🚀👩‍🚀' + ' #SpaceForce #space #spaceX #astronomy #AstronomyClub #NASASocial #NASA #NASA2020 #apod #pictureoftheday'
     downloadImage(nasa_img).then(() => {
       const img_path = Path.resolve(__dirname, 'images', 'img.jpg')
       const b64content = fs.readFileSync(img_path, { encoding: 'base64' })
