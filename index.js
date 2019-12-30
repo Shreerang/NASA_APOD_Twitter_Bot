@@ -4,7 +4,7 @@ const axios = require('axios');
 const fs = require('fs');
 const Path = require('path');
 
-const current_date = new Date().getFullYear() + '-' + new Date().getMonth() + '-' + new Date().getDate();
+const current_date = new Date().getFullYear() + '-' + (Number(new Date().getMonth())+1) + '-' + new Date().getDate();
 const nasa_api_key = process.env.nasa_api_key
 let nasa_img = '';
 let nasa_img_title = '';
