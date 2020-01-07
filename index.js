@@ -22,7 +22,7 @@ axios.get('https://api.nasa.gov/planetary/apod?date=' + current_date + '&api_key
   .then(function (response) {
     nasa_img = response.data.hdurl ? response.data.hdurl : response.data.url
     nasa_img_title = response.data.title ? response.data.title : 'NASA Astronomy Photo of the Day'
-    nasa_img_title = nasa_img_title + ' 👨‍🚀👩‍🚀' + ' #SpaceForce #space #spaceX #astronomy #AstronomyClub #NASASocial #NASA #NASA2020 #apod #pictureoftheday'
+    nasa_img_title = nasa_img_title + ' 👨‍🚀👩‍🚀' + ' #SpaceForce #space #spaceX #astronomy #AstronomyClub #NASASocial #NASA #NASA2020 #ISRO #MondayVibes #TuesdayThoughts #WednesdayWisdom #ThursdayThoughts #FridayFeeling #weekendvibes #WeekendKaVaar'
     downloadImage(nasa_img).then(() => {
       const img_path = Path.resolve(__dirname, 'images', 'img.jpg')
       const b64content = fs.readFileSync(img_path, { encoding: 'base64' })
@@ -34,7 +34,7 @@ axios.get('https://api.nasa.gov/planetary/apod?date=' + current_date + '&api_key
       
         T.post('media/metadata/create', meta_params, function (err, data, response) {
           if (!err) {
-            var params = { status: nasa_img_title, media_ids: [mediaIdStr] }
+            var params = { status: nasa_img_title.substring(0, 240), media_ids: [mediaIdStr] }
       
             T.post('statuses/update', params, function (err, data, response) {
               // console.log(data)
