@@ -4,6 +4,7 @@ const axios = require("axios");
 const fs = require("fs");
 const Path = require("path");
 const tweet = require("./thread.js");
+const text_tweet = require("./text_thread.js");
 
 const current_date =
   new Date().getFullYear() +
@@ -24,7 +25,7 @@ const day_based_hashtag = {
   3: "#WednesdayWisdom #WallpaperWednesday",
   4: "#ThursdayThoughts",
   5: "#FridayFeeling",
-  6: "#SundayFunday #weekendvibes #WeekendKaVaar"
+  6: "#SundayFunday #weekendvibes #WeekendKaVaar",
 };
 
 const T = new Twit({
@@ -32,7 +33,7 @@ const T = new Twit({
   consumer_secret: process.env.consumer_secret,
   access_token: process.env.access_token,
   access_token_secret: process.env.access_token_secret,
-  timeout_ms: 60 * 1000
+  timeout_ms: 60 * 1000,
 });
 
 axios
@@ -42,53 +43,74 @@ axios
       "&api_key=" +
       nasa_api_key
   )
-  .then(function(response) {
-    nasa_img = response.data.hdurl ? response.data.hdurl : response.data.url;
-    nasa_img_title = response.data.title
-      ? response.data.title
-      : "NASA Astronomy Photo of the Day";
-    nasa_img_title =
-      nasa_img_title +
-      " 👨‍🚀👩‍🚀\n" +
-      " #SpaceForce #space #spaceX #astronomy #AstronomyClub #NASASocial #NASA #ISRO #ASTRO #astrology #NASAatHome #Explore #wallpaper " +
-      day_based_hashtag[new Date().getDay()];
-    nasa_explanation = response.data.explanation
-      ? response.data.explanation
-      : "";
-    downloadImage(nasa_img).then(() => {
-      const img_path = Path.resolve(__dirname, "images", "img.jpg");
-      const b64content = fs.readFileSync(img_path, { encoding: "base64" });
+  .then(function (response) {
+    if (response.data.media_type === "video") {
+      nasa_img = response.data.url ? response.data.url : "";
+      nasa_img_title = response.data.title
+        ? response.data.title
+        : "NASA Astronomy Video of the Day";
+      nasa_img_title =
+        nasa_img_title +
+        " 👨‍🚀👩‍🚀\n\n" +
+        nasa_img +
+        "\n\n" +
+        "#SpaceForce #space #spaceX #astronomy #AstronomyClub #NASASocial #NASA #ISRO #ASTRO #astrology #NASAatHome #Explore #wallpaper " +
+        day_based_hashtag[new Date().getDay()];
+      nasa_explanation = response.data.explanation
+        ? response.data.explanation
+        : "";
+      text_tweet(nasa_img_title, nasa_explanation.match(/.{1,280}/g));
+    } else {
+      nasa_img = response.data.hdurl ? response.data.hdurl : response.data.url;
+      nasa_img_title = response.data.title
+        ? response.data.title
+        : "NASA Astronomy Photo of the Day";
+      nasa_img_title =
+        nasa_img_title +
+        " 👨‍🚀👩‍🚀\n\n" +
+        " #SpaceForce #space #spaceX #astronomy #AstronomyClub #NASASocial #NASA #ISRO #ASTRO #astrology #NASAatHome #Explore #wallpaper " +
+        day_based_hashtag[new Date().getDay()];
+      nasa_explanation = response.data.explanation
+        ? response.data.explanation
+        : "";
+      downloadImage(nasa_img).then(() => {
+        let img_path = "";
+        let b64content = "";
+        if (response.data.media_type !== "video") {
+          img_path = Path.resolve(__dirname, "images", "img.jpg");
+          b64content = fs.readFileSync(img_path, { encoding: "base64" });
+        }
 
-      T.post("media/upload", { media_data: b64content }, function(
-        err,
-        data,
-        response
-      ) {
-        var mediaIdStr = data.media_id_string;
-        var altText = nasa_img_title;
-        var meta_params = { media_id: mediaIdStr, alt_text: { text: altText } };
-
-        T.post("media/metadata/create", meta_params, function(
+        T.post("media/upload", { media_data: b64content }, function (
           err,
           data,
           response
         ) {
-          if (!err) {
-            var params = {
-              status: nasa_img_title.substring(0, 280),
-              media_ids: [mediaIdStr]
-            };
+          var mediaIdStr = data.media_id_string;
+          var altText = nasa_img_title;
+          var meta_params = {
+            media_id: mediaIdStr,
+            alt_text: { text: altText },
+          };
 
-            // T.post("statuses/update", params, function(err, data, response) {
-            //   // console.log(data);
-            // });
-            tweet(params, nasa_explanation.match(/.{1,280}/g));
-          }
+          T.post("media/metadata/create", meta_params, function (
+            err,
+            data,
+            response
+          ) {
+            if (!err) {
+              var params = {
+                status: nasa_img_title.substring(0, 280),
+                media_ids: [mediaIdStr],
+              };
+              tweet(params, nasa_explanation.match(/.{1,280}/g));
+            }
+          });
         });
       });
-    });
+    }
   })
-  .catch(function(error) {
+  .catch(function (error) {
     console.log(error);
   });
 
@@ -100,7 +122,7 @@ async function downloadImage(image_path) {
   const response = await axios({
     url,
     method: "GET",
-    responseType: "stream"
+    responseType: "stream",
   });
 
   response.data.pipe(writer);
