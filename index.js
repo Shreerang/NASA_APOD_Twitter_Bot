@@ -12,7 +12,7 @@ const current_date =
   (Number(new Date().getMonth()) + 1) +
   "-" +
   new Date().getDate();
-const nasa_api_key = process.env.nasa_api_key;
+const nasa_api_key = process.env.NASA_API_KEY;
 let nasa_img = "";
 let nasa_img_title = "";
 let nasa_explanation = "";
@@ -29,10 +29,10 @@ const day_based_hashtag = {
 };
 
 const T = new Twit({
-  consumer_key: process.env.consumer_key,
-  consumer_secret: process.env.consumer_secret,
-  access_token: process.env.access_token,
-  access_token_secret: process.env.access_token_secret,
+  consumer_key: process.env.CONSUMER_KEY,
+  consumer_secret: process.env.CONSUMER_SECRET,
+  access_token: process.env.ACCESS_TOKEN,
+  access_token_secret: process.env.ACCESS_TOKEN_SECRET,
   timeout_ms: 60 * 1000,
 });
 
