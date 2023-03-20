@@ -10,8 +10,8 @@
   "author": "Shreerang Patwardhan",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.21.1",
-    "dotenv": "^8.2.0",
+    "axios": "^0.21.4",
+    "dotenv": "^8.6.0",
     "twit": "^2.2.11"
   },
   "engines": {
